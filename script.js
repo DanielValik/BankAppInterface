@@ -90,34 +90,3 @@ let displayBalance = function (transactions) {
 
 displayTransactions(account1.transactions);
 displayBalance(account1.transactions);
-
-//Cats
-
-let verifyCats = function (catsJane, catsJulia) {
-  let catsJaneCopy = catsJane.slice(1, -1);
-  let isAdult = "";
-
-  catsJaneCopy.forEach((element, i) => {
-    isAdult = element < 2 ? "kitten" : "cat";
-    console.log(`Cat #${i + 1} is ${isAdult} she is ${element}`);
-  });
-
-  catsJulia.forEach((element, i) => {
-    isAdult = element < 2 ? "kitten" : "cat";
-    console.log(`Cat #${i + 1} is ${isAdult} she is ${element}`);
-  });
-};
-
-let getAverageHumanAge = function (catsAge) {
-  let humansAge = [];
-
-  catsAge.map((catAge) => {
-    humansAge.push(catAge <= 2 ? catAge * 10 : catAge * 7);
-  });
-
-  let result = humansAge.filter((age) => age >= 18);
-
-  return Math.round(result.reduce((acc, elem) => acc + elem) / result.length);
-};
-
-console.log(getAverageHumanAge([1, 16, 12, 4, 5, 1, 3, 11, 7, 2]));
