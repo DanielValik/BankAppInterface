@@ -88,5 +88,23 @@ let displayBalance = function (transactions) {
   labelBalance.textContent = balance + "$";
 };
 
+let displayIncomes = function (transactions) {
+  let incomes = transactions
+    .filter((trans) => trans > 0)
+    .reduce((acc, trans) => acc + trans);
+
+  labelSumIn.textContent = incomes + "$";
+};
+
+let displayOutcomes = function (transactions) {
+  let outcomes = transactions
+    .filter((trans) => trans < 0)
+    .reduce((acc, trans) => acc + trans);
+
+  labelSumOut.textContent = outcomes + "$";
+};
+
 displayTransactions(account1.transactions);
 displayBalance(account1.transactions);
+displayIncomes(account1.transactions);
+displayOutcomes(account1.transactions);
