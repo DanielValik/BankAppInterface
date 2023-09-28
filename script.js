@@ -39,6 +39,17 @@ const account5 = {
 
 const accounts = [account1, account2, account3, account4, account5];
 
+function createNicknames(accounts) {
+  accounts.map((acc) => {
+    acc.nickname = acc.userName
+      .toLowerCase()
+      .split(" ")
+      .map((elem) => elem[0])
+      .join("");
+  });
+}
+createNicknames(accounts);
+
 // Elements
 const labelWelcome = document.querySelector(".welcome");
 const labelDate = document.querySelector(".date");
@@ -65,6 +76,8 @@ const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
+// Displaying functions
+
 let displayTransactions = function (transactions) {
   containerTransactions.innerHTML = "";
   let transactionsText = "";
@@ -82,29 +95,43 @@ let displayTransactions = function (transactions) {
   });
 };
 
-let displayBalance = function (transactions) {
+let displayTotalIncomeOutcome = function (transactions) {
   let balance = transactions.reduce((acc, trans) => acc + trans, 0);
-
   labelBalance.textContent = balance + "$";
-};
 
-let displayIncomes = function (transactions) {
   let incomes = transactions
     .filter((trans) => trans > 0)
     .reduce((acc, trans) => acc + trans);
-
   labelSumIn.textContent = incomes + "$";
-};
 
-let displayOutcomes = function (transactions) {
   let outcomes = transactions
     .filter((trans) => trans < 0)
     .reduce((acc, trans) => acc + trans);
-
   labelSumOut.textContent = outcomes + "$";
+
+  let interest = transactions
+    .filter((trans) => trans > 0)
+    .map((trans) => (trans * 1.1) / 100)
+    .reduce((acc, trans) => acc + trans);
+  labelSumInterest.textContent = interest + "$";
 };
 
-displayTransactions(account1.transactions);
-displayBalance(account1.transactions);
-displayIncomes(account1.transactions);
-displayOutcomes(account1.transactions);
+// Sing In functionalities
+
+btnLogin.addEventListener("click", function (e) {
+  e.preventDefault();
+
+  let singedAcc = accounts.find((acc) => {
+    return (
+      acc.nickname === inputLoginUsername.value &&
+      acc.pin === Number(inputLoginPin.value)
+    );
+  });
+
+  if (singedAcc) {
+    labelWelcome.textContent = `Welcome ${singedAcc.userName.split(" ")[0]}!`;
+
+    displayTransactions(singedAcc.transactions);
+    displayTotalIncomeOutcome(singedAcc.transactions);
+  }
+});
