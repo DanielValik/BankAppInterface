@@ -38,6 +38,7 @@ const account5 = {
 };
 
 const accounts = [account1, account2, account3, account4, account5];
+let currentAcc;
 
 function createNicknames(accounts) {
   accounts.map((acc) => {
@@ -78,10 +79,10 @@ const inputClosePin = document.querySelector(".form__input--pin");
 
 // Displaying functions
 
-let displayTransactions = function (transactions) {
+let displayTransactions = function (account) {
   containerTransactions.innerHTML = "";
   let transactionsText = "";
-  transactions.forEach((element, index) => {
+  account.transactions.forEach((element, index) => {
     let transactionType = element > 0 ? "deposit" : "withdrawal";
 
     transactionsText = `<div class="transactions__row">
@@ -95,23 +96,24 @@ let displayTransactions = function (transactions) {
   });
 };
 
-let displayTotalIncomeOutcome = function (transactions) {
-  let balance = transactions.reduce((acc, trans) => acc + trans, 0);
+let displayTotalIncomeOutcome = function (account) {
+  let balance = account.transactions.reduce((acc, trans) => acc + trans, 0);
+  account.balance = balance;
   labelBalance.textContent = balance + "$";
 
-  let incomes = transactions
+  let incomes = account.transactions
     .filter((trans) => trans > 0)
     .reduce((acc, trans) => acc + trans);
   labelSumIn.textContent = incomes + "$";
 
-  let outcomes = transactions
+  let outcomes = account.transactions
     .filter((trans) => trans < 0)
     .reduce((acc, trans) => acc + trans);
   labelSumOut.textContent = outcomes + "$";
 
-  let interest = transactions
+  let interest = account.transactions
     .filter((trans) => trans > 0)
-    .map((trans) => (trans * 1.1) / 100)
+    .map((trans) => (trans * account.interest) / 100)
     .reduce((acc, trans) => acc + trans);
   labelSumInterest.textContent = interest + "$";
 };
@@ -121,17 +123,76 @@ let displayTotalIncomeOutcome = function (transactions) {
 btnLogin.addEventListener("click", function (e) {
   e.preventDefault();
 
-  let singedAcc = accounts.find((acc) => {
+  currentAcc = accounts.find((acc) => {
     return (
       acc.nickname === inputLoginUsername.value &&
       acc.pin === Number(inputLoginPin.value)
     );
   });
 
-  if (singedAcc) {
-    labelWelcome.textContent = `Welcome ${singedAcc.userName.split(" ")[0]}!`;
+  if (currentAcc) {
+    labelWelcome.textContent = `Welcome ${currentAcc.userName.split(" ")[0]}!`;
 
-    displayTransactions(singedAcc.transactions);
-    displayTotalIncomeOutcome(singedAcc.transactions);
+    displayTransactions(currentAcc);
+    displayTotalIncomeOutcome(currentAcc);
+
+    inputLoginUsername.value = "";
+    inputLoginUsername.blur();
+    inputLoginPin.value = "";
+    inputLoginPin.blur();
+  }
+});
+
+// Transfer
+
+btnTransfer.addEventListener("click", function (e) {
+  e.preventDefault();
+
+  const recipientAcc = accounts.find(
+    (acc) => acc.nickname === inputTransferTo.value
+  );
+  const transferAmount = Number(inputTransferAmount.value);
+
+  if (
+    recipientAcc &&
+    transferAmount > 0 &&
+    currentAcc.balance >= transferAmount &&
+    currentAcc.nickname !== recipientAcc
+  ) {
+    currentAcc.transactions.push(-transferAmount);
+    recipientAcc.transactions.push(Number(transferAmount));
+
+    displayTransactions(currentAcc);
+    displayTotalIncomeOutcome(currentAcc);
+
+    inputTransferTo.value = "";
+    inputTransferTo.blur();
+    inputTransferAmount.value = "";
+    inputTransferAmount.blur();
+  }
+});
+
+// Close
+
+btnClose.addEventListener("click", function (e) {
+  e.preventDefault();
+
+  if (
+    inputCloseUsername.value === currentAcc.nickname &&
+    Number(inputClosePin.value) === currentAcc.pin
+  ) {
+    let indexForRemove = accounts.findIndex(
+      (acc) => acc.nickname === currentAcc.nickname
+    );
+
+    accounts.splice(indexForRemove, 1);
+
+    containerApp.style.opacity = 0;
+    labelWelcome.textContent = `Sing In to Your account`;
+
+    inputClosePin.value = "";
+    inputCloseUsername.value = "";
+    inputClosePin.blur();
+    inputCloseUsername.blur();
   }
 });
