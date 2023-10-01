@@ -77,11 +77,14 @@ const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
+let isSorted = false;
+
 // Displaying functions
 
 let displayTransactions = function (account) {
   containerTransactions.innerHTML = "";
   let transactionsText = "";
+
   account.transactions.forEach((element, index) => {
     let transactionType = element > 0 ? "deposit" : "withdrawal";
 
@@ -209,4 +212,18 @@ btnLoan.addEventListener("click", function (e) {
   ) {
     console.log("loan");
   }
+});
+
+// Sort
+
+btnSort.addEventListener("click", function (e) {
+  e.preventDefault();
+
+  isSorted = !isSorted;
+
+  currentAcc.transactions = isSorted
+    ? currentAcc.transactions.sort((x, y) => x - y)
+    : currentAcc.transactions.sort((x, y) => y - x);
+
+  displayTransactions(currentAcc);
 });
