@@ -196,3 +196,17 @@ btnClose.addEventListener("click", function (e) {
     inputCloseUsername.blur();
   }
 });
+
+// Get Loan
+
+btnLoan.addEventListener("click", function (e) {
+  e.preventDefault();
+
+  let loanAmount = inputLoanAmount.value;
+
+  if (
+    currentAcc.transactions.some((trans) => trans >= (loanAmount / 100) * 10)
+  ) {
+    console.log("loan");
+  }
+});
