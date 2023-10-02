@@ -227,3 +227,36 @@ btnSort.addEventListener("click", function (e) {
 
   displayTransactions(currentAcc);
 });
+
+// Log current account transactions into console
+
+document
+  .querySelector(".balance__label")
+  .addEventListener("click", function (e) {
+    const transNodeList = document.querySelectorAll(".transactions__value");
+    const transArray = Array.from(transNodeList, (elem) =>
+      Number(elem.textContent.slice(0, -1))
+    );
+    console.log(transArray);
+  });
+
+// Other functions
+
+let bankTotalDeposit = accounts
+  .flatMap((acc) => acc.transactions)
+  .filter((trans) => trans > 0)
+  .reduce((acc, trans) => acc + trans);
+
+let { depositsTotal, withdrawalsTotal } = accounts
+  .flatMap((acc) => acc.transactions)
+  .reduce(
+    (acc, trans) => {
+      // trans > 0
+      //   ? (acc.depositsTotal += trans)
+      //   : (acc.withdrawalsTotal += trans);
+
+      acc[trans > 0 ? "depositsTotal" : "withdrawalsTotal"] += trans;
+      return acc;
+    },
+    { depositsTotal: 0, withdrawalsTotal: 0 }
+  );
